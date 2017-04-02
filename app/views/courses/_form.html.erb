@@ -22,9 +22,16 @@
   </div>
 
   <div class="field">
-    <%= f.label :teacher_id %>
-    <%= f.select :teacher, options_for_select(Person.all.map{|s|[s.to_s, s.id]}) %>
+    <%= f.label :quota %>
+    <%= f.number_field :quota %>
   </div>
+
+  <div class="field">
+    <%= f.label :teacher_id %>
+    <%= f.select :teacher, options_for_select(Person.where("is_professor = ?", true).map{|s|[s.to_s, s.id]}) %>
+  </div>
+
+
 
   <div class="actions">
     <%= f.submit %>

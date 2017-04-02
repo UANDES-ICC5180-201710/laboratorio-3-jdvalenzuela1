@@ -4,7 +4,7 @@ class CoursesController < ApplicationController
   # GET /courses
   # GET /courses.json
   def index
-    @courses = Course.all
+    @courses = Course.search(params[:search])
   end
 
   # GET /courses/1
@@ -76,6 +76,6 @@ class CoursesController < ApplicationController
         teacher = nil
       end
 
-      params.require(:course).permit(:title, :code).merge(:teacher => teacher)
+      params.require(:course).permit(:title, :code, :quota).merge(:teacher => teacher)
     end
 end

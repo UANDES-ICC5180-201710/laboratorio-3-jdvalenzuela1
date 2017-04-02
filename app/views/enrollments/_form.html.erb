@@ -13,7 +13,7 @@
 
   <div class="field">
     <%= f.label :student_id %>
-    <%= f.select :student, options_for_select(Person.all.map{|s|[s.to_s, s.id]}) %>
+    <%= f.select :student, options_for_select(Person.where("is_professor = ?", false).map{|s|[s.to_s, s.id]}) %>
   </div>
 
   <div class="field">
