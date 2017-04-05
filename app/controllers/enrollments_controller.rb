@@ -24,20 +24,37 @@ class EnrollmentsController < ApplicationController
   # POST /enrollments
   # POST /enrollments.json
   def create
-    @enrollment = Enrollment.new(enrollment_params)
 
-    if Enrollment.where("course_id = ?", @enrollment.course.id).size < Course.find(@enrollment.course.id).quota
-      respond_to do |format|
-        if @enrollment.save
-          format.html { redirect_to @enrollment, notice: 'Enrollment was successfully created.' }
-          format.json { render :show, status: :created, location: @enrollment }
-        else
-          format.html { render :new }
-          format.json { render json: @enrollment.errors, status: :unprocessable_entity }
+    course = nil
+    begin
+        course = Course.find(enrollment_params[:course_id])
+    rescue
+      puts "Error"
+    else
+      puts "Success"
+    end
+    @enrollment = Enrollment.new
+    @enrollment.student = enrollment_params[:student]
+    @enrollment.course = course
+    @enrollment.save
+
+    if @enrollment.valid?
+      if Enrollment.where("course_id = ?", @enrollment.course.id).size < Course.find(@enrollment.course.id).quota
+        respond_to do |format|
+          if @enrollment.save
+            format.html { redirect_to @enrollment, notice: 'Enrollment was successfully created.' }
+            format.json { render :show, status: :created, location: @enrollment }
+          else
+            format.html { render :new }
+            format.json { render json: @enrollment.errors, status: :unprocessable_entity }
+          end
         end
+      else
+        flash[:notice]  = "Se ha sobreasado el limite de alumnos del curso"
+        redirect_to(enrollments_path)
       end
     else
-      flash[:notice]  = "Se ha sobreasado el limite de alumnos del curso"
+      flash[:notice]  = "No existe el curso asociado"
       redirect_to(enrollments_path)
     end
   end
